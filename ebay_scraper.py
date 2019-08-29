@@ -25,7 +25,7 @@ def get_price(link):
     """Returns item price from eBay item link."""
     page = requests.get(link)
     soup = bs4.BeautifulSoup(page.text, 'lxml')
-    for selector in html_selectors:
+    for selector in html_selectors:  # loops through possible selectors as specified in html_selectors
         try:
             return float(re.sub('[^0-9.]', '', soup.select(selector)[0].text.strip()))
             # block is US ${price} so we take number only and convert to float, re.sub() to cut number out
@@ -81,8 +81,8 @@ def remove_outliers(data, z_thresh=2):
 
 
 def ebay_avg_price(search, num_items=25):  # num_items = 25, 50, 100, 200
-
-    with Pool(200) as pool:  # closes pool after it's done
+"""Runs program, using multiprocessing to speed up process"""
+    with Pool(200) as pool:
         price_list = list(pool.map(get_price, get_links(search, num_items)))
 
     num_outliers = remove_outliers(price_list)
